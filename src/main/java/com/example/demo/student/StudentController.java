@@ -11,36 +11,46 @@ import java.util.List;
 public class StudentController {
 
     private static final List<Student> STUDENTS = Arrays.asList(
-      new Student(1, "James Bond"),
-      new Student(2, "Maria Jones"),
-      new Student(3, "Anna Smith")
+            new Student(1, "James Bond"),
+            new Student(2, "Maria Jones"),
+            new Student(3, "Anna Smith")
     );
 
+
     @GetMapping(path = "{studentId}")
-    public Student getStudent(@PathVariable("studentId") Integer studentId) {
+    public Student getStudentByid(@PathVariable("studentId") Integer id) {
         return STUDENTS.stream()
-                .filter(student -> studentId.equals(student.getStudentId()))
+                .filter(student -> student.getStudentId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Student " + studentId + " does not exists"
-                ));
+                .orElse(null);
     }
+//    hasRole('ROLE_') hasAnyRole('ROLE_') hasAuthority('permission') hasAnyAuthority('permission')
 
     @GetMapping
+    @PreAuthorize("hasAuthority('student:read')")
     public List<Student> getAllStudents() {
+        System.out.println("getAllStudents");
         return STUDENTS;
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('student:write')")
-    public List<Student> postStudent(@RequestBody Student student) {
-        return STUDENTS;
+    public void registerNewStudent(@RequestBody Student student) {
+        System.out.println("registerNewStudent");
+        System.out.println(student);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")  //ADMIN_ROLE has four permissions - STUDENT_READ, STUDENT_WRITE
-    //COURSE_READ, AND COURSE_WRITE
     @DeleteMapping(path = "{studentId}")
-    public String deleteStudent(@PathVariable("studentId") Integer id) {
-        return "Student id is deleted";
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteStudent(@PathVariable("studentId") Integer studentId) {
+        System.out.println("deleteStudent");
+        System.out.println(studentId);
+    }
+
+    @PutMapping(path = "{studentId}")
+    @PreAuthorize("hasAuthority('student:write')")
+    public void updateStudent(@PathVariable("studentId") Integer studentId, @RequestBody Student student) {
+        System.out.println("updateStudent");
+        System.out.println(String.format("%s %s", studentId, student));
     }
 }

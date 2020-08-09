@@ -11,22 +11,44 @@ import java.util.List;
 public class CourseController {
 
     private final List<Course> COURSES = List.of(
-            new Course("History"),
-            new Course("Biology"),
-            new Course("Geography"),
-            new Course("Computer Science"),
-            new Course("Electronics")
+            new Course("History", 1),
+            new Course("Biology", 2),
+            new Course("Geography", 3),
+            new Course("Computer Science", 4),
+            new Course("Electronics", 5)
     );
 
-    @GetMapping("hasAuthority('course:read')")
+    @GetMapping
+    @PreAuthorize("hasAuthority('course:read')")
     public List<Course> getCOURSES() {
         return COURSES;
     }
 
-    @PostMapping(path = "{coursename}")
-    @PreAuthorize("hasAuthority('course:write')")
-    public String writeCourse(@PathVariable("coursename") String name) {
-        COURSES.add(new Course(name));
-        return "Course is added.";
+    @GetMapping(path = "{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_TRAINEE')")
+    public Course getCourseById(@PathVariable("id") Integer id) {
+        return COURSES.stream()
+                .filter(course -> course.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
+
+    @PostMapping(path = "{id}")
+    @PreAuthorize("hasAuthority('course:write')")
+    public String writeCourse(@PathVariable("id") Integer id, @RequestBody Course course) {
+        return String.format("course %s is added", course.getName());
+    }
+
+    @DeleteMapping(path = "{courseName}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteCourse(@PathVariable("courseName") String name) {
+        return String.format("Course %s is deleted", name);
+    }
+
+    @PutMapping(path = "{id}")
+    @PreAuthorize("hasAuthority('course:write')")
+    public String updateCourse(@PathVariable("id") Integer id, @RequestBody Course course) {
+        return String.format("CourseId %d is updated to : %s", id, course.getName());
+    }
+
 }

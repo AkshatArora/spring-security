@@ -6,7 +6,14 @@ public class Course {
     }
     private final String name;
 
-    public Course(String name) {
+    public Integer getId() {
+        return id;
+    }
+
+    private final Integer id;
+
+    public Course(String name, Integer id) {
         this.name = name;
+        this.id = id;
     }
 }

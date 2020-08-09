@@ -13,7 +13,7 @@ public enum Roles {
             COURSE_READ,
             COURSE_WRITE)),
     ADMIN_TRAINEE(Set.of(STUDENT_READ, COURSE_READ)),
-    STUDENT(Set.of());
+    STUDENT(Set.of(STUDENT_READ));
 
     public Set<Permissions> getPermissions() {
         return permissions;
