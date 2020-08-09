@@ -1,9 +1,7 @@
 package com.example.demo.student;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +17,7 @@ public class StudentController {
     );
 
     @GetMapping(path = "{studentId}")
+    @PreAuthorize("permitAll()")
     public Student getStudent(@PathVariable("studentId") Integer studentId) {
         return STUDENTS.stream()
                 .filter(student -> studentId.equals(student.getStudentId()))
@@ -26,5 +25,18 @@ public class StudentController {
                 .orElseThrow(() -> new IllegalStateException(
                         "Student " + studentId + " does not exists"
                 ));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('student:write')")
+    public List<Student> postStudent() {
+        return STUDENTS;
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")  //ADMIN_ROLE has four permissions - STUDENT_READ, STUDENT_WRITE
+    //COURSE_READ, AND COURSE_WRITE
+    @DeleteMapping(path = "{studentId}")
+    public String deleteStudent(@PathVariable("studentId") Integer id) {
+        return "Student id is deleted";
     }
 }
