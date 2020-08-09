@@ -17,7 +17,6 @@ public class StudentController {
     );
 
     @GetMapping(path = "{studentId}")
-    @PreAuthorize("permitAll()")
     public Student getStudent(@PathVariable("studentId") Integer studentId) {
         return STUDENTS.stream()
                 .filter(student -> studentId.equals(student.getStudentId()))
@@ -27,9 +26,14 @@ public class StudentController {
                 ));
     }
 
+    @GetMapping
+    public List<Student> getAllStudents() {
+        return STUDENTS;
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('student:write')")
-    public List<Student> postStudent() {
+    public List<Student> postStudent(@RequestBody Student student) {
         return STUDENTS;
     }
 
