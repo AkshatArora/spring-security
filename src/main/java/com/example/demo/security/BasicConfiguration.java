@@ -31,8 +31,7 @@ public class BasicConfiguration extends WebSecurityConfigurerAdapter {
   private final JwtConfig jwtConfig;
 
   @Autowired
-  public BasicConfiguration(PasswordEncoder passwordEncoder,
-                            JwtConfig jwtConfig) {
+  public BasicConfiguration(PasswordEncoder passwordEncoder, JwtConfig jwtConfig) {
     this.passwordEncoder = passwordEncoder;
     this.jwtConfig = jwtConfig;
   }
@@ -45,7 +44,7 @@ public class BasicConfiguration extends WebSecurityConfigurerAdapter {
           .sessionCreationPolicy((SessionCreationPolicy.STATELESS))
         .and()
         .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig))
-        .addFilterAfter(new JwtTokenVerifier(), JwtUsernameAndPasswordAuthenticationFilter.class)
+        .addFilterAfter(new JwtTokenVerifier(jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
         .authorizeRequests()
         .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
         .anyRequest()
